@@ -1,13 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
 <div id="info"></div>
-<div id="tester" ></div>
+<div id="chart" ></div>
+<div class="custom-control custom-switch">
+    <input value="Pause" type="checkbox" class="custom-control-input" id="pause_continue" onclick="pause_continue();">
+    <label class="custom-control-label" for="pause_continue">Pause</label>
+</div>
+<!-- <input type="button" value="Pause" id="pause_continue" onclick="pause_continue();"> -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
             <script>
                     //colocar if do undeffined (se o navegador nao suportar)
                     var up = 0;
                     var down = 0;
                     var time = new Date();
+                    var pause = false;
+                    var currentvalue = 'Pause';
+
                     var source = new EventSource("/data");
                     source.onmessage = function(event) {
                         console.log(event.data);
@@ -23,14 +31,12 @@
                             up = data["up"];
                             down = data["down"];
                             var username = data["username"];
-                            var a = getSpeed(up);
-                            var b = getSpeed(down);
-                            console.log(a);
-                            console.log(b);
+                            var realUP = getSpeed(up);
+                            var realDown = getSpeed(down);
                             //yValue1 = down;
                             //yValue2 = up;
-                            document.getElementById("info").className = 'alert alert-success';
-                            document.getElementById("info").innerHTML = "<b>Download:</b> " + b + " - <b>Upload:</b> "+a+"";
+                            document.getElementById("info").className = 'alert alert-light';
+                            document.getElementById("info").innerHTML = "<b>PPPoE:</b> "+ username + "</br><b>Download:</b> " + realDown + " - <b>Upload:</b> " + realUP;
                             updateChart();
                         }						
                     }
@@ -47,6 +53,17 @@
                         }else{
                             var data = `${speed} Kbps`;
                             return data;
+                        }
+                    }
+
+                    function pause_continue(){
+                        currentvalue = document.getElementById('pause_continue').value;
+                        if(currentvalue == 'Continue'){
+                            document.getElementById('pause_continue').value='Pause';
+                            pause = false;
+                        }else{
+                            document.getElementById('pause_continue').value='Continue';
+                            pause = true;
                         }
                     }
                     
@@ -68,27 +85,39 @@
                         mode: 'line'
                     };
     
-                    var toPlot = [download, upload];
+                    var toPlot = [upload,download];
     
                     var layout = {
-                        title: {
-                            text:'PPPoE: loja.cco',
-                            font: {
-                            family: 'Courier New, monospace',
-                            size: 24
-                            },
-                            xref: 'paper',
-                            x: 0.05,
-                        },
+                        // title: {
+                        //     text:'PPPoE: loja.cco',
+                        //     font: {
+                        //     family: 'Courier New, monospace',
+                        //     size: 24
+                        //     },
+                        //     xref: 'paper',
+                        //     x: 0.05,
+                        // },
                         showlegend: false,
+                        plot_bgcolor: '#303030',
+                        paper_bgcolor: '#333',
+                        gridcolor: '#fff',
+                        margin: {
+                            l: 50,
+                            r: 50,
+                            t: 5,
+                            b: 25,
+                            //pad: 80,
+                        },
                         xaxis: {
-                            tickformat: '%H:%M:%S'
+                            tickformat: '%H:%M:%S',
+                            //titlefont: {color: 'rgb(148, 103, 189)'},
+                            tickfont: {color: '#fff'}
                         },
                         yaxis: {
-                            title: 'Mbps',
+                            title: 'Kbps',
                             rangemode: 'tozero',
-                            titlefont: {color: 'rgb(148, 103, 189)'},
-                            tickfont: {color: 'rgb(148, 103, 189)'}
+                            titlefont: {color: '#fff'},
+                            tickfont: {color: '#fff'}
                         }
                         // yaxis2: {
                         //     title: 'Stress (%)',
@@ -99,14 +128,27 @@
                         // }
                     };
     
-                    Plotly.plot('tester', toPlot, layout,{responsive: true, displayModeBar: false});
+                    Plotly.plot('chart', toPlot, layout,{responsive: true, displayModeBar: false});
 
+                    var cnt = 0;
                     function updateChart() {
                         var time = new Date();
-                        Plotly.extendTraces('tester', {
+                        Plotly.extendTraces('chart', {
                             x: [[time], [time]],
                             y: [[up], [down]]
                         }, [0, 1])
+                        cnt++;
+                        console.log(cnt);
+                        console.log(pause);
+                        if(cnt >= 30 && pause == false) {
+                            Plotly.relayout('chart',{
+                                xaxis: {
+                                    range: [time.getTime()-(60*1000),time.getTime()],
+                                    tickformat: '%H:%M:%S',
+                                    tickfont: {color: '#fff'}
+                                }
+                            });
+                        }
                     }
                     
     
@@ -114,7 +156,7 @@
                     
                 //         var time = new Date();
     
-                //         Plotly.extendTraces('tester', {
+                //         Plotly.extendTraces('chart', {
                 //       x: [[time], [time]],
                 //       y: [[up], [down]]
                 //     }, [0, 1])
