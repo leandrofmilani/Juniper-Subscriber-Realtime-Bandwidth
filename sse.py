@@ -51,8 +51,8 @@ class ServerSentEvent:
             def getSpeed(command):
                 inputBW = command.xpath('//transit-traffic-statistics/input-bps')[0].text.strip()
                 outputBW = command.xpath('//transit-traffic-statistics/output-bps')[0].text.strip()
-                up = (int(inputBW)*8/1024)
-                down = (int(outputBW)*8/1024)
+                up = (int(inputBW)/1000)
+                down = (int(outputBW)/1000)
                 #up = realSpeed(inputBW,'UP')
                 #down = realSpeed(outputBW,'Down')
                 infilter = command.xpath('//filter-information/filter-input')[0].text.strip()
