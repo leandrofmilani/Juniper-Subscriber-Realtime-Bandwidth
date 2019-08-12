@@ -8,7 +8,7 @@ app.config['SECRET_KEY'] = 'asdbyegf2yveuyvdfstdf1twe51d5dfdfst'
 ###USAR git hub - ver questao das senhas nos arquivos aqui do codigo
 
 #ver https://nagix.github.io/chartjs-plugin-streaming/samples/line-horizontal.html
-#ou
+#ou https://redstapler.co/javascript-realtime-chart-plotly/
 # ~/Downloads/zingchart-branded-version.zip
 
 @app.route('/', methods=['GET', 'POST'])
@@ -25,7 +25,7 @@ def index():
 
 @app.route('/realtime')
 def realtime():
-	return render_template('realtime.html', title='Realtime')
+	return render_template('ploty.html', title='Realtime')
 
 @app.route('/data')
 def data():

@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+{% block content %}
+<div id="info"></div>
+<div id="tester" ></div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+            <script>
+                    //colocar if do undeffined (se o navegador nao suportar)
+                    var up = 0;
+                    var down = 0;
+                    var time = new Date();
+                    var source = new EventSource("/data");
+                    source.onmessage = function(event) {
+                        console.log(event.data);
+                        var data = JSON.parse(event.data);
+
+                        if (data['error']){
+                            var msg = data['error'];
+                            source.close();
+                            console.log(msg);
+                            document.getElementById("info").className = 'alert alert-danger';
+                            document.getElementById("info").innerHTML = msg;
+                        }else{
+                            up = data["up"];
+                            down = data["down"];
+                            var username = data["username"];
+                            var a = getSpeed(up);
+                            var b = getSpeed(down);
+                            console.log(a);
+                            console.log(b);
+                            //yValue1 = down;
+                            //yValue2 = up;
+                            document.getElementById("info").className = 'alert alert-success';
+                            document.getElementById("info").innerHTML = "<b>Download:</b> " + b + " - <b>Upload:</b> "+a+"";
+                            updateChart();
+                        }						
+                    }
+                    function roundToTwo(num) {    
+                        return +(Math.round(num + "e+2")  + "e-2");
+                    }
+
+                    function getSpeed(speed) {
+                        if (speed >= 1024){
+                            var value_mbps = (speed / 1024);
+                            var mbps = roundToTwo(value_mbps);
+                            var data = `${mbps} Mbps`;
+                            return data;
+                        }else{
+                            var data = `${speed} Kbps`;
+                            return data;
+                        }
+                    }
+                    
+    
+                    var upload = {
+                        x: [time],
+                        y: [up],
+                        hovertemplate: '%{y} kbps',
+                        name: "Upload",
+                        mode: 'line'
+                    };
+    
+                    var download = {
+                        x: [time],
+                        y: [down],
+                        hovertemplate: '%{y} kbps',
+                        //yaxis: 'y2',
+                        name: "Download",
+                        mode: 'line'
+                    };
+    
+                    var toPlot = [download, upload];
+    
+                    var layout = {
+                        title: {
+                            text:'PPPoE: loja.cco',
+                            font: {
+                            family: 'Courier New, monospace',
+                            size: 24
+                            },
+                            xref: 'paper',
+                            x: 0.05,
+                        },
+                        showlegend: false,
+                        xaxis: {
+                            tickformat: '%H:%M:%S'
+                        },
+                        yaxis: {
+                            title: 'Mbps',
+                            rangemode: 'tozero',
+                            titlefont: {color: 'rgb(148, 103, 189)'},
+                            tickfont: {color: 'rgb(148, 103, 189)'}
+                        }
+                        // yaxis2: {
+                        //     title: 'Stress (%)',
+                        //     titlefont: {color: 'rgb(148, 103, 189)'},
+                        //     tickfont: {color: 'rgb(148, 103, 189)'},
+                        //     side: 'right',
+                        //     overlaying: 'y'
+                        // }
+                    };
+    
+                    Plotly.plot('tester', toPlot, layout,{responsive: true, displayModeBar: false});
+
+                    function updateChart() {
+                        var time = new Date();
+                        Plotly.extendTraces('tester', {
+                            x: [[time], [time]],
+                            y: [[up], [down]]
+                        }, [0, 1])
+                    }
+                    
+    
+                //     var interval = setInterval(function() {
+                    
+                //         var time = new Date();
+    
+                //         Plotly.extendTraces('tester', {
+                //       x: [[time], [time]],
+                //       y: [[up], [down]]
+                //     }, [0, 1])
+                //   }, 2000)
+            </script>
+
+{% endblock content %}
