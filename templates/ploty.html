@@ -1,166 +1,189 @@
 {% extends "layout.html" %}
 {% block content %}
-<div id="info"></div>
-<div id="chart" ></div>
-<div class="custom-control custom-switch">
+<div id="info" style="display: none;">
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <div class="card text-white bg-secondary mb-3" style="max-width: 15rem;">
+                <div class="card-header"><i class="fas fa-user fa-lg"></i> PPPoE</div>
+                <div class="card-body">
+                    <h4 id="pppoe" class="card-title"></h4>
+                    <p class="card-text"><small id="ipaddress"></small></p>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <div class="card text-white bg-danger mb-3" style="max-width: 15rem;">
+                <div class="card-header"><i class="fas fa-download fa-lg"></i> Download</div>
+                <div class="card-body">
+                    <h4 id="download" class="card-title"></h4>
+                    <p class="card-text"><small id="filterout"></small></p>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <div class="card text-white bg-primary mb-3" style="max-width: 15rem;">
+                <div class="card-header"><i class="fas fa-upload fa-lg"></i> Upload</div>
+                <div class="card-body">
+                    <h4 id="upload" class="card-title"></h4>
+                    <p class="card-text"><small id="filterin"></small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center">
+    <div id="loading" class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<div id="alert"></div>
+<div id="chart" style="height: 250px; width: 100%;"></div>
+<div id="pause" class="custom-control custom-switch" style="display: none;">
     <input value="Pause" type="checkbox" class="custom-control-input" id="pause_continue" onclick="pause_continue();">
     <label class="custom-control-label" for="pause_continue">Pause</label>
 </div>
-<!-- <input type="button" value="Pause" id="pause_continue" onclick="pause_continue();"> -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-            <script>
-                    //colocar if do undeffined (se o navegador nao suportar)
-                    var up = 0;
-                    var down = 0;
-                    var time = new Date();
-                    var pause = false;
-                    var currentvalue = 'Pause';
+<script>
+    if(typeof(EventSource) !== "undefined") {
 
-                    var source = new EventSource("/data");
-                    source.onmessage = function(event) {
-                        console.log(event.data);
-                        var data = JSON.parse(event.data);
+        var up = 0;
+        var down = 0;
+        var time = new Date();
+        var pause = false;
+        var showData = true;
+        var cnt = 0;
 
-                        if (data['error']){
-                            var msg = data['error'];
-                            source.close();
-                            console.log(msg);
-                            document.getElementById("info").className = 'alert alert-danger';
-                            document.getElementById("info").innerHTML = msg;
-                        }else{
-                            up = data["up"];
-                            down = data["down"];
-                            var username = data["username"];
-                            var realUP = getSpeed(up);
-                            var realDown = getSpeed(down);
-                            //yValue1 = down;
-                            //yValue2 = up;
-                            document.getElementById("info").className = 'alert alert-light';
-                            document.getElementById("info").innerHTML = "<b>PPPoE:</b> "+ username + "</br><b>Download:</b> " + realDown + " - <b>Upload:</b> " + realUP;
-                            updateChart();
-                        }						
-                    }
-                    function roundToTwo(num) {    
-                        return +(Math.round(num + "e+2")  + "e-2");
-                    }
+        var source = new EventSource("/data");
+        source.onmessage = function(event) {
+            console.log(event.data);
+            var data = JSON.parse(event.data);
+            document.getElementById("loading").style.display = 'none';
 
-                    function getSpeed(speed) {
-                        if (speed >= 1024){
-                            var value_mbps = (speed / 1024);
-                            var mbps = roundToTwo(value_mbps);
-                            var data = `${mbps} Mbps`;
-                            return data;
-                        }else{
-                            var data = `${speed} Kbps`;
-                            return data;
-                        }
-                    }
-
-                    function pause_continue(){
-                        currentvalue = document.getElementById('pause_continue').value;
-                        if(currentvalue == 'Continue'){
-                            document.getElementById('pause_continue').value='Pause';
-                            pause = false;
-                        }else{
-                            document.getElementById('pause_continue').value='Continue';
-                            pause = true;
-                        }
-                    }
-                    
-    
-                    var upload = {
-                        x: [time],
-                        y: [up],
-                        hovertemplate: '%{y} kbps',
-                        name: "Upload",
-                        mode: 'line'
-                    };
-    
-                    var download = {
-                        x: [time],
-                        y: [down],
-                        hovertemplate: '%{y} kbps',
-                        //yaxis: 'y2',
-                        name: "Download",
-                        mode: 'line'
-                    };
-    
-                    var toPlot = [upload,download];
-    
-                    var layout = {
-                        // title: {
-                        //     text:'PPPoE: loja.cco',
-                        //     font: {
-                        //     family: 'Courier New, monospace',
-                        //     size: 24
-                        //     },
-                        //     xref: 'paper',
-                        //     x: 0.05,
-                        // },
-                        showlegend: false,
-                        plot_bgcolor: '#303030',
-                        paper_bgcolor: '#333',
-                        gridcolor: '#fff',
-                        margin: {
-                            l: 50,
-                            r: 50,
-                            t: 5,
-                            b: 25,
-                            //pad: 80,
-                        },
-                        xaxis: {
-                            tickformat: '%H:%M:%S',
-                            //titlefont: {color: 'rgb(148, 103, 189)'},
-                            tickfont: {color: '#fff'}
-                        },
-                        yaxis: {
-                            title: 'Kbps',
-                            rangemode: 'tozero',
-                            titlefont: {color: '#fff'},
-                            tickfont: {color: '#fff'}
-                        }
-                        // yaxis2: {
-                        //     title: 'Stress (%)',
-                        //     titlefont: {color: 'rgb(148, 103, 189)'},
-                        //     tickfont: {color: 'rgb(148, 103, 189)'},
-                        //     side: 'right',
-                        //     overlaying: 'y'
-                        // }
-                    };
-    
+            if (data['error']){
+                var msg = data['error'];
+                source.close();
+                console.log(msg);
+                document.getElementById("alert").className = 'alert alert-danger';
+                document.getElementById("alert").innerHTML = msg;
+            }else{
+                if (showData){
                     Plotly.plot('chart', toPlot, layout,{responsive: true, displayModeBar: false});
+                    document.getElementById("info").style.display = 'block';
+                    showData = false;
+                    console.log('Rendered chart!');
+                }
+                up = data["up"];
+                down = data["down"];
+                var username = data["username"];
+                var filterin = data["filterin"];
+                var filterout = data["filterout"];
+                var ipaddress = data["ipaddress"];
+                var realUP = getSpeed(up);
+                var realDown = getSpeed(down);
+                document.getElementById("download").innerHTML = realDown;
+                document.getElementById("upload").innerHTML = realUP;
+                document.getElementById("pppoe").innerHTML = username;
+                document.getElementById("ipaddress").innerHTML = ipaddress;
+                document.getElementById("filterin").innerHTML = filterin;
+                document.getElementById("filterout").innerHTML = filterout;
+                updateChart();
+            }						
+        }
 
-                    var cnt = 0;
-                    function updateChart() {
-                        var time = new Date();
-                        Plotly.extendTraces('chart', {
-                            x: [[time], [time]],
-                            y: [[up], [down]]
-                        }, [0, 1])
-                        cnt++;
-                        console.log(cnt);
-                        console.log(pause);
-                        if(cnt >= 30 && pause == false) {
-                            Plotly.relayout('chart',{
-                                xaxis: {
-                                    range: [time.getTime()-(60*1000),time.getTime()],
-                                    tickformat: '%H:%M:%S',
-                                    tickfont: {color: '#fff'}
-                                }
-                            });
-                        }
+        function roundToTwo(num) {    
+            return +(Math.round(num + "e+2")  + "e-2");
+        }
+
+        function getSpeed(speed) {
+            if (speed >= 1024){
+                var value_mbps = (speed / 1024);
+                var mbps = roundToTwo(value_mbps);
+                var data = `${mbps} Mbps`;
+                return data;
+            }else{
+                var data = `${speed} Kbps`;
+                return data;
+            }
+        }
+
+        function pause_continue(){
+            var currentvalue = document.getElementById('pause_continue').value;
+            if(currentvalue == 'Continue'){
+                document.getElementById('pause_continue').value='Pause';
+                pause = false;
+            }else{
+                document.getElementById('pause_continue').value='Continue';
+                pause = true;
+            }
+        }
+        
+        var upload = {
+            x: [time],
+            y: [up],
+            hovertemplate: '%{y} kbps',
+            name: "Upload",
+            mode: 'line'
+        };
+
+        var download = {
+            x: [time],
+            y: [down],
+            hovertemplate: '%{y} kbps',
+            line: {
+                color: 'rgb(255,0,0)'
+            },
+            name: "Download",
+            mode: 'line'
+        };
+
+        var toPlot = [upload,download];
+
+        var layout = {
+            showlegend: false,
+            plot_bgcolor: '#303030',
+            paper_bgcolor: '#333',
+            gridcolor: '#fff',
+            margin: {
+                l: 50,
+                r: 50,
+                t: 5,
+                b: 25,
+            },
+            xaxis: {
+                tickformat: '%H:%M:%S',
+                tickfont: {color: '#fff'}
+            },
+            yaxis: {
+                title: 'Kbps',
+                rangemode: 'tozero',
+                titlefont: {color: '#fff'},
+                tickfont: {color: '#fff'}
+            }
+        };
+        
+        function updateChart() {
+            var time = new Date();
+            Plotly.extendTraces('chart', {
+                x: [[time], [time]],
+                y: [[up], [down]]
+            }, [0, 1])
+            cnt++;
+            if(cnt >= 30 && pause == false) {
+                document.getElementById("pause").style.display = 'block';
+                Plotly.relayout('chart',{
+                    xaxis: {
+                        range: [time.getTime()-(60*1000),time.getTime()+(2*1000)],
+                        tickformat: '%H:%M:%S',
+                        tickfont: {color: '#fff'}
                     }
-                    
-    
-                //     var interval = setInterval(function() {
-                    
-                //         var time = new Date();
-    
-                //         Plotly.extendTraces('chart', {
-                //       x: [[time], [time]],
-                //       y: [[up], [down]]
-                //     }, [0, 1])
-                //   }, 2000)
-            </script>
+                });
+            }
+        }
 
+    }else{
+        alert('Sorry! No server-sent events support in this browser...');
+    }
+</script>
 {% endblock content %}

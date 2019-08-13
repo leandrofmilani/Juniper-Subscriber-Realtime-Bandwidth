@@ -1,10 +1,9 @@
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
+    <meta name="description" content="Juniper subriscriber real-time bandwidth">
     <meta name="author" content="Leandro Fabris Milani">
     {% if title %}
         <title> {{ title }}</title>
@@ -35,12 +34,13 @@
     </style>
     <!-- Custom styles for this template -->
     <link href="https://getbootstrap.com/docs/4.3/examples/cover/cover.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/3a7767ee0e.js"></script>
   </head>
   <body class="text-center">
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
   <header class="masthead mb-auto">
     <div class="inner">
-      <h3 class="masthead-brand">View Juniper PPPoE bandwidth</h3>
+      <h3 class="masthead-brand">Juniper Bandwidth</h3>
       <nav class="nav nav-masthead justify-content-center">
         <a class="nav-link active" href="{{ url_for('index') }}">Home</a>
       </nav>
@@ -59,10 +59,9 @@
                 {% endif %}
             {% endwith %}
         </div>
-    {% block content %}
-    {% endblock content %}
   </main>
-
+  {% block content %}
+  {% endblock content %}
   <footer class="mastfoot mt-auto">
     <div class="inner">
       <p>Created by <a href="https://www.linkedin.com/in/leandrofmilani/">Leandro Fabris Milani</a>.</p>

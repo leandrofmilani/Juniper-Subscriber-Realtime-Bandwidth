@@ -5,21 +5,12 @@ from sse import ServerSentEvent
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'asdbyegf2yveuyvdfstdf1twe51d5dfdfst'
 
-###USAR git hub - ver questao das senhas nos arquivos aqui do codigo
-
-#ver https://nagix.github.io/chartjs-plugin-streaming/samples/line-horizontal.html
-#ou https://redstapler.co/javascript-realtime-chart-plotly/
-# ~/Downloads/zingchart-branded-version.zip
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
 	form = UsernameForm()
 	if form.validate_on_submit():
 		session['username'] = form.username.data
 		session['ip'] = form.ip.data
-		# if (form.username.data != 'loja.cco'):
-		# 	flash(f"Username {form.username.data} not found!","danger")
-		# else:
 		return redirect(url_for('realtime'))
 	return render_template('index.html', title='Home', form=form)
 
