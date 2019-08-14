@@ -1,44 +1,44 @@
 {% extends "layout.html" %}
 {% block content %}
 <div id="info" style="display: none;">
-    <div class="form-row">
-        <div class="form-group col-md-4">
-            <div class="card text-white bg-secondary mb-3" style="max-width: 15rem;">
-                <div class="card-header"><i class="fas fa-user fa-lg"></i> PPPoE</div>
-                <div class="card-body">
-                    <h4 id="pppoe" class="card-title"></h4>
-                    <p class="card-text"><small id="ipaddress"></small></p>
-                </div>
+    <div class="card-deck">
+        <div class="card text-white bg-secondary" >
+            <div class="card-header"><i class="fas fa-user fa-lg"></i> PPPoE</div>
+            <div class="card-body">
+                <p id="pppoe" class="card-text">/p>
+            </div>
+            <div class="card-footer">
+                <small id="ipaddress"></small>
             </div>
         </div>
-        <div class="form-group col-md-4">
-            <div class="card text-white bg-danger mb-3" style="max-width: 15rem;">
-                <div class="card-header"><i class="fas fa-download fa-lg"></i> Download</div>
-                <div class="card-body">
-                    <h4 id="download" class="card-title"></h4>
-                    <p class="card-text"><small id="filterout"></small></p>
-                </div>
+        <div class="card text-white bg-danger" >
+            <div class="card-header"><i class="fas fa-download fa-lg"></i> Download</div>
+            <div class="card-body">
+                <h4 id="download" class="card-text"></h4>
+            </div>
+            <div class="card-footer">
+                <small id="filterout"></small>
             </div>
         </div>
-        <div class="form-group col-md-4">
-            <div class="card text-white bg-primary mb-3" style="max-width: 15rem;">
-                <div class="card-header"><i class="fas fa-upload fa-lg"></i> Upload</div>
-                <div class="card-body">
-                    <h4 id="upload" class="card-title"></h4>
-                    <p class="card-text"><small id="filterin"></small></p>
-                </div>
+        <div class="card text-white bg-primary" >
+            <div class="card-header"><i class="fas fa-upload fa-lg"></i> Upload</div>
+            <div class="card-body">
+                <h4 id="upload" class="card-text"></h4>
+            </div>
+            <div class="card-footer">
+                <small id="filterin"></small>
             </div>
         </div>
     </div>
 </div>
-
-<div class="d-flex justify-content-center">
-    <div id="loading" class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
+<div id="loading">
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
     </div>
 </div>
-
-<div id="alert"></div>
+<div id="alert" class="alert alert-danger" style="display: none;"></div>
 <div id="chart" style="height: 250px; width: 100%;"></div>
 <div id="pause" class="custom-control custom-switch" style="display: none;">
     <input value="Pause" type="checkbox" class="custom-control-input" id="pause_continue" onclick="pause_continue();">
@@ -65,10 +65,18 @@
                 var msg = data['error'];
                 source.close();
                 console.log(msg);
-                document.getElementById("alert").className = 'alert alert-danger';
+                document.getElementById("alert").style.display = 'block';
                 document.getElementById("alert").innerHTML = msg;
             }else{
                 if (showData){
+                    var username = data["username"];
+                    var filterin = data["filterin"];
+                    var filterout = data["filterout"];
+                    var ipaddress = data["ipaddress"];
+                    document.getElementById("pppoe").innerHTML = username;
+                    document.getElementById("ipaddress").innerHTML = ipaddress;
+                    document.getElementById("filterin").innerHTML = filterin;
+                    document.getElementById("filterout").innerHTML = filterout;
                     Plotly.plot('chart', toPlot, layout,{responsive: true, displayModeBar: false});
                     document.getElementById("info").style.display = 'block';
                     showData = false;
@@ -76,18 +84,8 @@
                 }
                 up = data["up"];
                 down = data["down"];
-                var username = data["username"];
-                var filterin = data["filterin"];
-                var filterout = data["filterout"];
-                var ipaddress = data["ipaddress"];
-                var realUP = getSpeed(up);
-                var realDown = getSpeed(down);
-                document.getElementById("download").innerHTML = realDown;
-                document.getElementById("upload").innerHTML = realUP;
-                document.getElementById("pppoe").innerHTML = username;
-                document.getElementById("ipaddress").innerHTML = ipaddress;
-                document.getElementById("filterin").innerHTML = filterin;
-                document.getElementById("filterout").innerHTML = filterout;
+                document.getElementById("download").innerHTML = getSpeed(down);
+                document.getElementById("upload").innerHTML = getSpeed(up);
                 updateChart();
             }						
         }
