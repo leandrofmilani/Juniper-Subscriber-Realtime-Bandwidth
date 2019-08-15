@@ -10,10 +10,9 @@
     {% else %}
         <title> Page </title>
     {% endif %}
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/cover/">
 
     <!-- Bootstrap core CSS -->
-<link href="https://getbootstrap.com/docs/4.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
 
     <style>
@@ -32,9 +31,8 @@
         }
       }
     </style>
-    <!-- Custom styles for this template -->
-    <link href="https://getbootstrap.com/docs/4.3/examples/cover/cover.css" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/3a7767ee0e.js"></script>
+    <link href="{{ url_for('static', filename='css/cover.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/fontawesome-all.js') }}"></script>
   </head>
   <body class="text-center">
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
