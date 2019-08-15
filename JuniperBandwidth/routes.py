@@ -1,9 +1,7 @@
-from flask import Flask, render_template, Response, url_for, flash, redirect, session
-from forms import UsernameForm
-from sse import ServerSentEvent
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'asdbyegf2yveuyvdfstdf1twe51d5dfdfst'
+from flask import render_template, Response, url_for, flash, redirect, session
+from JuniperBandwidth import app
+from JuniperBandwidth.forms import UsernameForm
+from JuniperBandwidth.sse import ServerSentEvent
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
