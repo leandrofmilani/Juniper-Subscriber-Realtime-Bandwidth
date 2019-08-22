@@ -14,7 +14,7 @@ def index():
 
 @app.route('/realtime')
 def realtime():
-	return render_template('ploty.html', title='Realtime')
+	return render_template('realtime.html', title='Realtime')
 
 @app.route('/data')
 def data():
