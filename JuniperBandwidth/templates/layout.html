@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Juniper subriscriber real-time bandwidth">
     <meta name="author" content="Leandro Fabris Milani">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon.png') }}">
     {% if title %}
         <title> {{ title }}</title>
     {% else %}
-        <title> Page </title>
+        <title> JuniperBandwidth </title>
     {% endif %}
 
     <!-- Bootstrap core CSS -->
-<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
 
     <style>
@@ -62,7 +63,7 @@
   {% endblock content %}
   <footer class="mastfoot mt-auto">
     <div class="inner">
-      <p><small>Created by <a href="https://www.linkedin.com/in/leandrofmilani/">Leandro Fabris Milani</a>.</small></p>
+      <p><small>Developed by Leandro Fabris Milani</small></p>
     </div>
   </footer>
 </div>
