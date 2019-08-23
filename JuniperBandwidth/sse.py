@@ -9,11 +9,15 @@ class ServerSentEvent:
 
     def generate(self):
         try:
+            with open("./JuniperBandwidth/login_juniper.json", "r") as handler:
+                login_pass = json.load(handler)
+
+            print(f"Connecting to '{self.ip}'")
             conn = manager.connect(
                     host=self.ip,
                     port='22',
-                    username='teste',
-                    password='BUDWjhpgJ8sl',
+                    username=login_pass["login"],
+                    password=login_pass["password"],
                     timeout=10,
                     device_params={'name':'junos'},
                     hostkey_verify=False)
@@ -24,8 +28,7 @@ class ServerSentEvent:
                 return (interface,ipaddress)
             
             try:
-                print('Conecting...')
-                print(self.username)
+                print(f"Getting info from PPPoE: '{self.username}'")
                 interfaceIP = getInterfaceIpaddress(conn.command(f'show subscriber user-name {self.username}'))
                 interface = interfaceIP[0]
                 ipaddress = interfaceIP[1]
@@ -33,7 +36,7 @@ class ServerSentEvent:
                 message = (f"Error, username '{self.username}' not found!")
                 print(message)
                 conn.close_session()
-                print("Connection closed!")
+                print(f"Connection closed! Host: '{self.ip}'")
                 error = json.dumps({'error':message})
                 yield "data: " + error + "\n\n"
                 return False
@@ -55,7 +58,6 @@ class ServerSentEvent:
                     data = getSpeed(conn.command(f'show interfaces {interface} statistics detail'))
                     data['username'] = self.username
                     data['ipaddress'] = ipaddress
-                    print(data)
                     values = json.dumps(data)
                     yield "data: " + values + "\n\n"
                     time.sleep(2)
@@ -63,14 +65,14 @@ class ServerSentEvent:
                     message = "Conection lost!"
                     print(message)
                     conn.close_session()
-                    print("Connection closed!")
+                    print(f"Connection closed! Host: '{self.ip}'")
                     error = json.dumps({'error':message})
                     yield "data: " + error + "\n\n"
                     break
 
         except GeneratorExit:
             conn.close_session()
-            print("Connection closed!")
+            print(f"Connection closed! Host: '{self.ip}'")
 
         except Exception as e:
             message = "Problem found! " + str(e)
