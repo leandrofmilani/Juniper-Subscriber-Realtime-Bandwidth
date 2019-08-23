@@ -10,7 +10,7 @@ def index():
 		session['username'] = form.username.data
 		session['ip'] = form.ip.data
 		return redirect(url_for('realtime'))
-	return render_template('index.html', title='Home', form=form)
+	return render_template('index.html', title='JuniperBandwidth', form=form)
 
 @app.route('/realtime')
 def realtime():
@@ -25,4 +25,4 @@ def data():
 	return Response(generate, mimetype= 'text/event-stream')
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run()
