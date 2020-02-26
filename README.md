@@ -18,8 +18,8 @@ The Juniper user needs at least have a user with permission of the class read-on
 
 Juniper commands:
 ```
-set system login user **username** class read-only
-set system login user **username** authentication plain-text-password **password**
+set system login user username class read-only
+set system login user username authentication plain-text-password password
 set system services netconf ssh
 ```
 
