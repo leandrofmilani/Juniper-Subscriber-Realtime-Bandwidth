@@ -84,8 +84,8 @@ server {
 
 #### Initial Screen
 ![Initial_Screen]
-(image_example1.jpeg)
+(https://github.com/leandrofmilani/Juniper-Subscriber-Realtime-Bandwidth/blob/master/image_example1.jpeg)
 
 #### Chart Screen
 ![Chart_Screen]
-(image_example2.jpeg)
+(https://github.com/leandrofmilani/Juniper-Subscriber-Realtime-Bandwidth/blob/master/image_example2.jpeg)
