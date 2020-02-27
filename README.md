@@ -14,19 +14,19 @@ Web interface to visualize the real-time bandwidth utilization of a subscriber P
 1. Edit the file JuniperBandwidth/login_juniper.json and change to your Juniper login and password.
 1. Run: python3 run.py
 
-The Juniper user needs at least have a user with permission of the class read-only and must also have the services netconf and ssh enabled.
+The idea is to use a global user for all Juniper boxes, then in the interface you just need to insert login PPPoE and the IP of the Juniper. You can set a local user (or radius) that have at least the same permissions of the class read-only, you also have to enable the services netconf and ssh.
 
-Juniper commands:
+Juniper commands to create a local user with class read-only:
 ```
 set system login user username class read-only
 set system login user username authentication plain-text-password password
 set system services netconf ssh
 ```
 
-You can use Nginx as a proxy to have web access to the application in production. Following this tutorial:
+You can use Nginx as a web proxy to have web access to the application in production environment. This tutorial can help you to set it up:
 https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04
 
-Here my configs for production:
+Here my configs for this app and Nginx:
 
 ###### wsgi.py
 ```
