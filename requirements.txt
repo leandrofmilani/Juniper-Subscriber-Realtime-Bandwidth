@@ -7,7 +7,7 @@ Flask==1.1.1
 Flask-WTF==0.14.2
 itsdangerous==1.1.0
 Jinja2==2.10.1
-lxml==4.4.1
+lxml==4.6.3
 MarkupSafe==1.1.1
 ncclient==0.6.6
 paramiko==2.6.0
